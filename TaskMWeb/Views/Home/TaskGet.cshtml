@@ -1,0 +1,122 @@
+﻿@model IEnumerable<TaskM>
+
+@{
+    ViewData["Title"] = "Fetching Task From WebAPI";
+}
+
+<head>
+    <a class="btn btn-primary active" data-toggle="modal" data-target="#AddtaskModal" onclick="AddTask">AddTask</a>
+</head>
+<table id="table1" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Task Name")
+            </th>
+            
+            <th>
+                @Html.DisplayName("Task Status")
+            </th>
+        </tr>
+    </thead>  
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Task_Name</td>
+                <td>@if (item.Task_Status == true) 
+                    {
+                        @Html.DisplayName("Done");
+                    }
+                    else
+                    {
+                        @Html.DisplayName("ToDo");
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>   
+</table>
+
+<div id="AddtaskModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class=" modal-header">
+                <label>AddUser</label>
+            </div>
+            <div class="modal-body">                
+                    <div class="form-group">
+                        <label>Task Name</label>
+                        <input type="text" onclick="nameClick()" placeholder="Task Name" id="name" />
+                        <p style="color:red" id="tasknameError"></p>
+                    </div>
+                    <div class="form-group">
+                        <label>Task Status</label>
+                        <input type="text" onclick="statusClick()" placeholder="Task Status" id="status" />
+                        <p style="color:red" id="taskstatusError"></p>
+                    </div>              
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="AddT()" >Add Task</button>
+            </div>
+            <h6 id="errorMessage" onclick="removeWarning()" style="color:red"></h6>
+        </div>       
+    </div>
+</div>
+<button type="button" onclick="Back()">Back To Index</button>
+
+<script>
+
+    function removeWarning() {
+        $("#errorMessage").text("");
+    }
+    function nameClick() {
+        $("#tasknameError").text("");
+        $("#errorMessage").text("");
+    }
+    function statusClick() {
+        $("#taskstatusError").text("");
+        $("#errorMessage").text("");
+      
+    }
+
+    Back= function()
+    {
+        window.location.href = '/Home/Index';
+    }
+
+    AddT = function () {
+        var model = {
+            Task_id: "",
+            Task_Name: $("#name").val(),
+            Task_Status: $("#status").val(),
+            User_id: "",
+        }
+        if ($("#name").val() == "") {       
+            $("#tasknameError").text("Enter the Task Name");
+        }
+        if ($("#status").val() == "") {           
+            $("#taskstatusError").text("Enter the Status in Form OF True or False");
+        }
+
+        $.ajax(
+            {
+                url: "/Home/AddTask",
+                type: "Post",
+                dataType: "json",
+                data: model,
+                success: function (data) {
+                    alert("User Added")                    
+                    window.location.reload("/Home/TaskGet");
+                },
+                else: function () {
+                    alert("Not Added")
+                }
+            })
+    }
+
+</script>
+
+
+
